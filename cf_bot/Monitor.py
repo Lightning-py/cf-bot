@@ -49,12 +49,14 @@ class Monitor:
                         p[6],
                     )
 
+                    print(handle, name, group, grade)
+
                     if group.lower() != 'python' and handle != '-':
                         participant = Participant.Participant(handle, name, group, grade)
 
                         self.participants[handle] = participant
-        except:
-            pass
+        except Exception as e:
+            print(f"Error reading participants file {type(e).__name__}")
 
     def uploadData(self):
         # данные в файле хранятся следующим образом
@@ -93,13 +95,17 @@ class Monitor:
             pass
 
     def updateSubmissions(self, firstTime=False):
-        try:
-            self.old_submissions = deepcopy(self.submissions)
-            self.submissions.clear()
-            self.new_submissions.clear()
+#        try:
+            #self.old_submissions = deepcopy(self.submissions)
+            #self.submissions.clear()
+            #self.new_submissions.clear()
+
+            self.new_submissions_temp = {}
+            self.submissions_temp = {}
+            self.old_submissions_temp = self.submissions
 
             for contest in self.contestIDsTOUserIDs.keys():
-                self.submissions[contest] = api.call(
+                self.submissions_temp[contest] = api.call(
                     "contest.status",
                     key=self.api_key,
                     secret=self.api_secret,
@@ -110,19 +116,22 @@ class Monitor:
                 # теперь сравним с прошлыми
 
                 if contest in self.old_submissions.keys():
-                    old_submissions = self.old_submissions[contest]
+                    old_submissions_contest = self.old_submissions_temp[contest]
 
-                    self.new_submissions[contest] = []
-                    if len(old_submissions) < len(self.submissions[contest]):
+                    self.new_submissions_temp[contest] = []
+                    if len(old_submissions_contest) < len(self.submissions_temp[contest]):
                         new_subs = []
-                        for i in range(len(self.submissions[contest]) - len(old_submissions)):
-                            new_subs.append(self.submissions[contest][i])
-                        self.new_submissions[contest] = new_subs
+                        for i in range(len(self.submissions_temp[contest]) - len(old_submissions_contest)):
+                            new_subs.append(self.submissions_temp[contest][i])
+                        self.new_submissions_temp[contest] = new_subs
                 else:
-                    self.new_submissions[contest] = self.submissions[contest]
-        except:
-            pass
-    
+                    self.new_submissions_temp[contest] = self.submissions_temp[contest]
+
+            self.old_submissions = self.submissions
+            self.submissions = self.submissions_temp
+            self.new_submissions = self.new_submissions_temp
+#        except Exception as e:
+#            print(f"Error while updating! {type(e).__name__}")
 
     def deleteUser(self, userId):
         try:
