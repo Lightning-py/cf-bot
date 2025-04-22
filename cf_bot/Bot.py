@@ -28,14 +28,14 @@ class CodeforcesMonitorBot:
         self.job_queue = self.application.job_queue
         self.job_queue.run_repeating(
             self._check_submissions,
-            interval=60.0,
+            interval=20.0,
             first=0.0
         )
 
         self.job_queue.run_repeating(
             self._unload,
-            interval=10.0,
-            first=10.0
+            interval=1200.0,
+            first=1200.0
         )
     
     def _init_handlers(self):
@@ -149,7 +149,7 @@ class CodeforcesMonitorBot:
                         
                         handle = handle.split('=', 1)
                         if len(handle) == 2: handle = handle[1] 
-                        
+                        else: handle = handle[0].strip()                        
                         participant = self.monitor.participants.get(handle)
                         
                         if participant:

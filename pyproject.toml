@@ -8,6 +8,7 @@ authors = ["Sergey <sergejananev78@gmail.com>"]
 python = "^3.12"
 python-codeforces="^0.2.7"
 python-telegram-bot = { version = "^22.0", extras = ["job-queue"] }
+python-dotenv = "^1.1.0"
 
 [tool.poetry.group.dev.dependencies]
 pytest = "^7.0.0"
@@ -15,3 +16,6 @@ pytest = "^7.0.0"
 [build-system]
 requires = ["poetry-core>=1.0.0"]
 build-backend = "poetry.core.masonry.api"
+
+[tool.poetry.scripts]
+start-bot = "cf_bot.main:main"
